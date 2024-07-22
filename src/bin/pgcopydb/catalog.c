@@ -6487,10 +6487,10 @@ catalog_add_s_extension_config(DatabaseCatalog *catalog,
 }
 
 
-/* 
-*   catalog_iter_s_extesnion_timescaledb_checker , iterates over the list of extensions in our catalogs 
-*   and checks for presence of timescaledb extension.
-*/
+/*
+ *   catalog_iter_s_extesnion_timescaledb_checker , iterates over the list of extensions in our catalogs
+ *   and checks for presence of timescaledb extension.
+ */
 bool
 catalog_iter_s_extension_timescaledb_checker(DatabaseCatalog *catalog,
 											 bool *timescaledb)
@@ -6500,7 +6500,7 @@ catalog_iter_s_extension_timescaledb_checker(DatabaseCatalog *catalog,
 
 	iter->catalog = catalog;
 
-	*timescaledb=false;
+	*timescaledb = false;
 
 	if (!catalog_iter_s_extension_init(iter))
 	{
@@ -6510,7 +6510,6 @@ catalog_iter_s_extension_timescaledb_checker(DatabaseCatalog *catalog,
 
 	for (;;)
 	{
-
 		if (!catalog_iter_s_extension_next(iter))
 		{
 			/* errors have already been logged */
@@ -6530,24 +6529,23 @@ catalog_iter_s_extension_timescaledb_checker(DatabaseCatalog *catalog,
 			break;
 		}
 
-		if(strcmp(ext->extname, "timescaledb") == 0)
+		if (strcmp(ext->extname, "timescaledb") == 0)
 		{
-			if(!catalog_iter_s_extension_finish(iter))
+			if (!catalog_iter_s_extension_finish(iter))
 			{
 				return false;
 			}
 
 			*timescaledb = true;
-			
+
 			return true;
-
 		}
-
 	}
 
 
 	return true;
 }
+
 
 /*
  * catalog_iter_s_extension iterates over the list of extensions in our
