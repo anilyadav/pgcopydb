@@ -426,7 +426,7 @@ copydb_prepare_extensions_restore(CopyDataSpec *copySpecs)
 		/* errors have already been logged*/
 		return false;
 	}
-    
+
 	if (hasTimescaledb)
 	{
 		log_debug("Timescaledb extension is present");
@@ -454,7 +454,7 @@ copydb_finalize_extensions_restore(CopyDataSpec *copySpecs)
 	DatabaseCatalog *filterDB = &(copySpecs->catalogs.filter);
 	const char *extensionName = "timescaledb";
 
-    if (!catalog_extension_exists(filterDB, extensionName, &hasTimescaledb))
+	if (!catalog_extension_exists(filterDB, extensionName, &hasTimescaledb))
 	{
 		/* errors have already been logged*/
 		return false;
@@ -488,9 +488,36 @@ timescaledb_pre_restore(CopyDataSpec *copySpecs)
 		return false;
 	}
 
-	char *sql = "SELECT timescaledb_pre_restore()";
+	SourceExtension *extension = (SourceExtension *) calloc(1, sizeof(SourceExtension));
 
-	if (!pgsql_execute(&dst, sql))
+	if (extension == NULL)
+	{
+		log_error(ALLOCATION_FAILED_ERROR);
+		exit(EXIT_CODE_INTERNAL_ERROR);
+	}
+
+	DatabaseCatalog *filterDB = &(copySpecs->catalogs.filter);
+
+	const char *extensionName = "timescaledb";
+
+	if (!catalog_lookup_s_extension_by_extname(filterDB,
+											   extensionName,
+											   extension))
+	{
+		log_error("Failed to lookup for extension \"%s\" in our "
+				  "internal catalogs",
+				  extensionName);
+
+		exit(EXIT_CODE_INTERNAL_ERROR);
+	}
+
+	char *sql = "SELECT $1. timescaledb_pre_restore()";
+
+	int paramCount = 1;
+	Oid paramTypes[1] = { TEXTOID };
+	const char *paramValues[1] = { extension->extnamespace };
+
+	if (!pgsql_send_with_params(&dst, sql, paramCount, paramTypes, paramValues))
 	{
 		log_error("Failed to call timescaledb_pre_restore()");
 		return false;

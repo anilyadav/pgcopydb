@@ -125,9 +125,13 @@ bool catalog_section_fetch(SQLiteQuery *query);
 bool catalog_total_duration(DatabaseCatalog *catalog);
 
 bool catalog_extension_exists(DatabaseCatalog *catalog,
-							const char *extensionName,
-							bool *exists);
+							  const char *extensionName,
+							  bool *exists);
+bool catalog_extension_exists_fetch(SQLiteQuery *query);
 bool catalog_extension_fetch(SQLiteQuery *query);
+bool catalog_lookup_s_extension_by_extname(DatabaseCatalog *catalog, const
+										   char *extensionName,
+										   SourceExtension *extension);
 
 char * CopyDataSectionToString(CopyDataSection section);
 
